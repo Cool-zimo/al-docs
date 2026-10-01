@@ -1,0 +1,54 @@
+name: 扫描第三方书籍
+
+# 每 6 小时扫一次 GitHub，发现新书 → 校验 → 更新 registry.json
+# 也可以手动触发：Actions 页 → Run workflow
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - 'tools/**'
+      - 'SPEC.md'
+
+permissions:
+  contents: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 扫描并校验
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN || github.token }}
+        run: |
+          python3 tools/discover.py 2>&1 | tee scan.log
+          echo "--- 结果 ---"
+          python3 -c "
+          import json
+          d=json.load(open('registry.json',encoding='utf-8'))
+          ok=[b for b in d['books'] if b['ok']]
+          print(f\"共 {len(d['books'])} 本，通过 {len(ok)} 本\")
+          for b in d['books']:
+              if not b['ok']:
+                  print('  ✗', b['repo'], '—', (b.get('errors') or ['未知'])[0])
+          "
+
+      - name: 提交索引更新
+        run: |
+          git config user.name "al-docs bot"
+          git config user.email "bot@users.noreply.github.com"
+          if [ -n "$(git status --porcelain registry.json reports)" ]; then
+            git add registry.json reports
+            git commit -m "索引更新：$(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          else
+            echo "索引无变化，跳过提交"
+          fi
