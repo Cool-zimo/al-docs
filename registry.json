@@ -1,0 +1,65 @@
+{
+ "updated": "2026-10-01T09:10:12.760295Z",
+ "format_version": 1,
+ "books": [
+  {
+   "id": "office-automation",
+   "repo": "Cool-zimo/al-book-office-automation",
+   "url": "https://github.com/Cool-zimo/al-book-office-automation",
+   "branch": "main",
+   "stars": 0,
+   "pushed_at": "",
+   "ok": true,
+   "title": "Python 自动化办公",
+   "subtitle": "批量处理文件与表格",
+   "desc": "面向会 Python 基础语法的学习者，用 pathlib、shutil、openpyxl 把重复的文件整理与表格统计工作交给脚本。",
+   "stage": "实战",
+   "level": "进阶",
+   "langs": [
+    "zh",
+    "en"
+   ],
+   "tags": [
+    "自动化",
+    "openpyxl",
+    "pathlib",
+    "办公"
+   ],
+   "cover": "",
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "示例作者",
+    "bio": "这是 AnyLearn 第三方书籍的投稿示例。",
+    "url": "https://github.com/Cool-zimo"
+   },
+   "chapters": [
+    {
+     "n": 1,
+     "title": "第 1 章 · 文件批处理"
+    },
+    {
+     "n": 2,
+     "title": "第 2 章 · 表格批处理"
+    }
+   ],
+   "stats": {
+    "lessons": 20,
+    "tests": 4,
+    "questions": 88,
+    "code_questions": 28,
+    "languages": 2,
+    "lines": 2905
+   },
+   "n_errors": 0,
+   "n_warnings": 0,
+   "errors": [],
+   "warnings": [],
+   "marks": {
+    "name_ok": true,
+    "topic_ok": true,
+    "format_ok": true,
+    "reason": ""
+   }
+  }
+ ]
+}

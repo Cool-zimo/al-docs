@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AnyLearn 第三方书籍 · al-docs</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1f2328; --sub:#5b6470; --line:#e4e7ec;
+    --ok:#1a7f37; --ok-bg:#e8f5ec; --bad:#c9372c; --bad-bg:#fdeceb;
+    --brand:#2563eb; --brand-bg:#eef4ff; --warn:#9a6700; --warn-bg:#fff8e6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header.hero{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;
+    border-radius:16px;padding:32px 28px;margin-bottom:28px}
+  header.hero h1{margin:0 0 8px;font-size:26px}
+  header.hero p{margin:0;opacity:.9;font-size:15px}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:22px}
+  .step{background:rgba(255,255,255,.13);border-radius:10px;padding:12px 14px;font-size:13.5px}
+  .step b{display:block;font-size:14px;margin-bottom:3px}
+  h2{font-size:18px;margin:32px 0 14px;display:flex;align-items:center;gap:8px}
+  h2 .n{background:var(--brand);color:#fff;font-size:12px;padding:2px 8px;border-radius:20px}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+  .bar input,.bar select{padding:8px 12px;border:1px solid var(--line);border-radius:8px;
+    font-size:14px;background:#fff;font-family:inherit}
+  .bar input{flex:1;min-width:200px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+  .card.rej{opacity:.72}
+  .card h3{margin:0;font-size:17px;line-height:1.4}
+  .card .sub{color:var(--sub);font-size:13.5px;margin:-4px 0 0}
+  .card .desc{font-size:14px;color:#3d4450;margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:6px;font-size:12px}
+  .chip{background:#f0f2f5;border-radius:20px;padding:3px 10px;color:var(--sub)}
+  .chip.stage{background:var(--brand-bg);color:var(--brand)}
+  .chip.tag{background:#f3f0ff;color:#6d28d9}
+  .stat{display:flex;gap:14px;font-size:13px;color:var(--sub);
+    border-top:1px solid var(--line);padding-top:10px;margin-top:auto}
+  .stat b{color:var(--ink);font-weight:600}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;
+    padding:4px 10px;border-radius:20px;font-weight:600}
+  .badge.ok{background:var(--ok-bg);color:var(--ok)}
+  .badge.bad{background:var(--bad-bg);color:var(--bad)}
+  .author{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--sub)}
+  .author img{width:26px;height:26px;border-radius:50%;background:#e4e7ec;object-fit:cover}
+  .errbox{background:var(--bad-bg);border:1px solid #f5c6c2;border-radius:8px;
+    padding:10px 12px;font-size:12.5px;color:#7d201b;max-height:150px;overflow:auto}
+  .errbox ul{margin:5px 0 0;padding-left:18px}
+  .empty{text-align:center;padding:50px 20px;color:var(--sub)}
+  .empty code{background:#fff;padding:2px 6px;border-radius:4px;border:1px solid var(--line)}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--line);
+    color:var(--sub);font-size:13px}
+  .note{background:var(--warn-bg);border:1px solid #f0e0b0;border-radius:10px;
+    padding:12px 16px;font-size:13.5px;color:#6b4e00;margin-bottom:20px}
+  details{margin-top:8px}
+  summary{cursor:pointer;font-size:13px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <h1>AnyLearn 第三方书籍</h1>
+  <p>任何人都可以给 AnyLearn 写教材。建一个符合格式的仓库，机器人会自动发现、校验并收录。</p>
+  <div class="steps">
+    <div class="step"><b>1 · 建仓库</b>名字以 <code>al-book-</code> 开头，打上 topic <code>al-book</code></div>
+    <div class="step"><b>2 · 写声明</b>根目录放 <code>albook.json</code>，含 <code>"format":"al-book"</code></div>
+    <div class="step"><b>3 · 放内容</b><code>content/{zh,en}/lessons/</code> + <code>toc.json</code></div>
+    <div class="step"><b>4 · 等收录</b>机器人校验通过后自动出现在这里</div>
+  </div>
+</header>
+
+<div id="note" class="note" hidden></div>
+
+<h2>书籍索引 <span class="n" id="count">…</span></h2>
+
+<div class="bar">
+  <input id="q" placeholder="搜索书名、作者、标签…" autocomplete="off">
+  <select id="stage"><option value="">全部分类</option></select>
+  <select id="status">
+    <option value="">全部状态</option>
+    <option value="ok">仅通过校验</option>
+    <option value="bad">未通过</option>
+  </select>
+</div>
+
+<div class="grid" id="grid"><div class="empty">正在载入索引…</div></div>
+
+<footer>
+  <p>格式规范：<a href="SPEC.md">SPEC.md</a> ·
+     校验器源码：<a href="tools/validate_book.py">validate_book.py</a> ·
+     发现器：<a href="tools/discover.py">discover.py</a></p>
+  <p>索引由机器人自动生成，<span id="ts"></span>。收录不代表 AnyLearn 官方推荐，内容责任归原作者。</p>
+</footer>
+
+</div>
+
+<script>
+const REG = 'registry.json';
+let ALL = [];
+
+async function load() {
+  let d;
+  try {
+    const r = await fetch(REG, { cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    d = await r.json();
+  } catch (e) {
+    document.getElementById('grid').innerHTML =
+      '<div class="empty">索引载入失败：' + e.message +
+      '<br><br>如果你是仓库管理员：需要先跑一次 <code>discover.py</code> 生成 <code>registry.json</code>。</div>';
+    return;
+  }
+  ALL = d.books || [];
+  document.getElementById('ts').textContent = '最后更新 ' + (d.updated || '未知');
+
+  const stages = [...new Set(ALL.map(b => b.stage).filter(Boolean))].sort();
+  const sel = document.getElementById('stage');
+  stages.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s; sel.appendChild(o);
+  });
+
+  const bad = ALL.filter(b => !b.ok).length;
+  if (bad) {
+    document.getElementById('note').hidden = false;
+    document.getElementById('note').innerHTML =
+      '有 ' + bad + ' 个仓库未通过校验，列在下方并标出了具体错误。' +
+      '错误修好后机器人下次扫描会自动更新状态。';
+  }
+  render();
+}
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function render() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const stage = document.getElementById('stage').value;
+  const status = document.getElementById('status').value;
+
+  const list = ALL.filter(b => {
+    if (stage && b.stage !== stage) return false;
+    if (status === 'ok' && !b.ok) return false;
+    if (status === 'bad' && b.ok) return false;
+    if (!q) return true;
+    const hay = [b.title, b.subtitle, b.desc, b.id, b.repo,
+                 (b.author && b.author.name) || '',
+                 (b.tags || []).join(' ')].join(' ').toLowerCase();
+    return hay.includes(q);
+  });
+
+  document.getElementById('count').textContent = list.length + ' 本';
+  const grid = document.getElementById('grid');
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty">没有符合条件的书。<br><br>' +
+      '还没有人投稿？那就做第一本——照 <a href="SPEC.md">SPEC.md</a> 建仓库即可。</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(b => {
+    const s = b.stats || {};
+    const a = b.author || {};
+    const langs = (b.langs || []).map(l => l === 'zh' ? '中文' : 'English').join(' / ') || '—';
+    return `
+<div class="card ${b.ok ? '' : 'rej'}">
+  <div>
+    <h3>${esc(b.title)}</h3>
+    <p class="sub">${esc(b.subtitle)}</p>
+  </div>
+  <div class="meta">
+    <span class="badge ${b.ok ? 'ok' : 'bad'}">${b.ok ? '✓ 通过校验' : '✗ ' + (b.n_errors || 0) + ' 处错误'}</span>
+    ${b.stage ? `<span class="chip stage">${esc(b.stage)}</span>` : ''}
+    ${b.level ? `<span class="chip">${esc(b.level)}</span>` : ''}
+    ${(b.tags || []).map(t => `<span class="chip tag">${esc(t)}</span>`).join('')}
+  </div>
+  <p class="desc">${esc(b.desc)}</p>
+  <div class="author">
+    ${a.avatar ? `<img src="${esc(a.avatar)}" alt="">` : '<span>👤</span>'}
+    <span>${esc(a.name || b.repo.split('/')[0])}</span>
+    ${b.license ? `<span>· ${esc(b.license)}</span>` : ''}
+  </div>
+  <div class="stat">
+    <span><b>${s.lessons || 0}</b> 课</span>
+    <span><b>${s.questions || 0}</b> 题</span>
+    <span>${langs}</span>
+    ${b.stars ? `<span>★ ${b.stars}</span>` : ''}
+  </div>
+  <div style="font-size:13px;display:flex;gap:12px;flex-wrap:wrap">
+    <a href="${esc(b.url)}" target="_blank" rel="noopener">仓库 ↗</a>
+    ${b.ok ? `<a href="https://cool-zimo.github.io/al/#/b/${esc(b.id)}:3p">在 AnyLearn 阅读 →</a>` : ''}
+    <a href="reports/${esc(b.repo.replace('/', '__'))}.json" target="_blank">校验报告 ↗</a>
+  </div>
+  ${!b.ok && b.errors && b.errors.length
+    ? `<div class="errbox"><b>未通过的原因：</b><ul>${
+        b.errors.slice(0, 6).map(e => `<li>${esc(e)}</li>`).join('')
+      }${b.errors.length > 6 ? `<li>…还有 ${b.errors.length - 6} 条</li>` : ''}</ul></div>`
+    : ''}
+</div>`;
+  }).join('');
+}
+
+['q', 'stage', 'status'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+
+load();
+</script>
+</body>
+</html>
