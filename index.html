@@ -29,6 +29,9 @@
   .bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
   .bar input,.bar select{padding:8px 12px;border:1px solid var(--line);border-radius:8px;
     font-size:14px;background:#fff;font-family:inherit}
+  .checkbtn{display:inline-flex;align-items:center;padding:8px 14px;border-radius:8px;
+    background:var(--brand);color:#fff;font-size:13.5px;font-weight:600}
+  .checkbtn:hover{filter:brightness(1.08);text-decoration:none}
   .bar input{flex:1;min-width:200px}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
@@ -82,6 +85,7 @@
 <h2>书籍索引 <span class="n" id="count">…</span></h2>
 
 <div class="bar">
+  <a class="checkbtn" href="check.html">🔎 自查我的书</a>
   <input id="q" placeholder="搜索书名、作者、标签…" autocomplete="off">
   <select id="stage"><option value="">全部分类</option></select>
   <select id="status">
@@ -96,7 +100,8 @@
 <footer>
   <p>格式规范：<a href="SPEC.md">SPEC.md</a> ·
      校验器源码：<a href="tools/validate_book.py">validate_book.py</a> ·
-     发现器：<a href="tools/discover.py">discover.py</a></p>
+     发现器：<a href="tools/discover.py">discover.py</a> ·
+     <a href="check.html">自查一本书</a></p>
   <p>索引由机器人自动生成，<span id="ts"></span>。收录不代表 AnyLearn 官方推荐，内容责任归原作者。</p>
 </footer>
 

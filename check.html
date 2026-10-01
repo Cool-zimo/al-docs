@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>自查一本书 · AnyLearn 第三方书籍</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#fff; --ink:#1f2328; --sub:#5b6470; --line:#e4e7ec;
+    --ok:#1a7f37; --ok-bg:#e8f5ec; --bad:#c9372c; --bad-bg:#fdeceb;
+    --brand:#2563eb; --brand-bg:#eef4ff; --warn:#9a6700; --warn-bg:#fff8e6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"WenQuanYi Micro Hei","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:960px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:22px;margin:0 0 6px}
+  .back{font-size:13px;color:var(--sub);display:inline-block;margin-bottom:18px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:20px 22px;margin-bottom:18px}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text]{flex:1;min-width:240px;padding:10px 13px;border:1px solid var(--line);
+    border-radius:8px;font-size:14px;font-family:inherit}
+  button{padding:10px 18px;border:1px solid var(--brand);background:var(--brand);color:#fff;
+    border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+  button:hover{filter:brightness(1.08)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  button.ghost{background:#fff;color:var(--ink);border-color:var(--line)}
+  .hint{font-size:12.5px;color:var(--sub);margin-top:8px}
+  .verdict{padding:16px 18px;border-radius:10px;font-size:15px;font-weight:600;margin-bottom:14px}
+  .verdict.ok{background:var(--ok-bg);color:var(--ok)}
+  .verdict.bad{background:var(--bad-bg);color:var(--bad)}
+  .verdict small{display:block;font-weight:400;font-size:13px;margin-top:5px;opacity:.85}
+  ul.issues{margin:8px 0 0;padding-left:20px;font-size:13.5px}
+  ul.issues li{margin-bottom:5px;font-weight:400;color:var(--ink)}
+  .sec-h{font-size:14px;font-weight:700;margin:18px 0 8px}
+  .stats{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;color:var(--sub)}
+  .stats b{color:var(--ink);font-size:16px;font-weight:700}
+  .toc{margin-top:10px}
+  .toc-ch{font-weight:700;font-size:14px;margin:14px 0 6px;color:var(--brand)}
+  .toc-item{display:flex;gap:10px;padding:5px 0;font-size:13.5px;border-bottom:1px solid #f2f4f7;
+    cursor:pointer}
+  .toc-item:hover{background:#f8fafc}
+  .toc-item .n{color:var(--sub);font-variant-numeric:tabular-nums;min-width:24px}
+  .toc-item .sm{color:var(--sub);font-size:12.5px}
+  .preview{border:1px solid var(--line);border-radius:8px;padding:16px 18px;background:#fcfcfd;
+    font-size:13.5px;max-height:520px;overflow:auto;margin-top:8px}
+  .preview h1,.preview h2,.preview h3{font-size:15px;margin:12px 0 6px}
+  .preview pre{background:#f4f5f7;padding:10px 12px;border-radius:6px;overflow:auto;font-size:12.5px}
+  .preview code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .preview blockquote{border-left:3px solid var(--brand);margin:8px 0;padding:4px 12px;color:var(--sub)}
+  .preview .qbox{border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:10px 0;background:#fff}
+  .preview .qbox .qt{font-weight:600;font-size:13px}
+  .preview .qbox .qo{font-size:12.5px;color:var(--sub);padding-left:6px}
+  .empty{color:var(--sub);font-size:13.5px;padding:14px 0}
+  .err{background:var(--bad-bg);border:1px solid #f5c6c2;color:#7d201b;
+    border-radius:8px;padding:12px 14px;font-size:13.5px}
+  .spinner{display:inline-block;width:14px;height:14px;border-radius:50%;
+    border:2px solid var(--line);border-top-color:var(--brand);animation:sp .8s linear infinite;
+    vertical-align:-2px;margin-right:6px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<a class="back" href="index.html">← 返回书籍索引</a>
+<h1>自查一本书</h1>
+<p style="color:var(--sub);font-size:14px;margin:0 0 20px">
+  把仓库名贴进来，立刻跑一遍完整校验，并预览目录和课文。不用等机器人。
+</p>
+
+<div class="panel">
+  <div class="row">
+    <input type="text" id="repo" placeholder="owner/repo，例如 Cool-zimo/al-book-office-automation" spellcheck="false" autocomplete="off">
+    <button id="go">检查</button>
+    <button class="ghost" id="demo">用示例书试试</button>
+  </div>
+  <div class="hint">
+    公开仓库无需登录。仓库内容通过 raw 直读，不走 API 限流，所以一本书几十个文件也很快。
+  </div>
+</div>
+
+<div id="out"></div>
+
+</div>
+
+<script src="tools/validate.js"></script>
+<script>
+const API = 'https://api.github.com';
+const RAW = 'https://raw.githubusercontent.com';
+
+function esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+async function getJSON(url) {
+  const r = await fetch(url, { headers: { 'Accept': 'application/vnd.github+json' } });
+  if (!r.ok) throw new Error(r.status === 404 ? '仓库或分支不存在' : 'HTTP ' + r.status);
+  return r.json();
+}
+
+/**
+ * 拿文件清单只花 1 次 API 调用；内容全部走 raw 直读。
+ * raw 是 CDN 不是 API，不受 60 次/小时的限制 ——
+ * 否则校验一本 30 课的书就要几十次请求，两次就撞上限流。
+ */
+async function loadRepo(full, branch) {
+  const tree = await getJSON(`${API}/repos/${full}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
+  const want = tree.tree.filter(x =>
+    x.type === 'blob' && /\.(md|json)$/.test(x.path) &&
+    (x.path === 'albook.json' || x.path === 'README.md' || x.path.startsWith('content/')));
+
+  const files = {};
+  await Promise.all(want.map(async x => {
+    try {
+      const r = await fetch(`${RAW}/${full}/${branch}/${x.path}`);
+      if (r.ok) files[x.path] = await r.text();
+    } catch (e) { /* 单个文件读不到就跳过 */ }
+  }));
+  return { files, count: want.length };
+}
+
+function renderMarkdown(md) {
+  let s = esc(md);
+  s = s.replace(/^### (.*)$/gm, '<h3>$1</h3>')
+       .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+       .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+       .replace(/^> (.*)$/gm, '<blockquote>$1</blockquote>')
+       .replace(/```(\w*)\n([\s\S]*?)```/g, (m, lang, code) => `<pre><code>${code}</code></pre>`)
+       .replace(/`([^`]+)`/g, '<code>$1</code>')
+       .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+       .replace(/\n/g, '<br>');
+  return s;
+}
+
+function renderQuiz(q) {
+  const t = String(q.type || 'choice');
+  let body = '';
+  if (t === 'choice') {
+    body = (q.options || []).map((o, i) =>
+      `<div class="qo">${i === Number(q.answer) ? '✓ ' : '○ '}${esc(o)}</div>`).join('');
+  } else if (q.cases) {
+    body = `<div class="qo">用例：${esc(String(q.cases).split('\n').filter(Boolean).join(' ｜ '))}</div>`;
+  } else if (q.checks) {
+    body = `<div class="qo">检查项 ${(q.checks || []).length} 条</div>`;
+  } else if (q.checklist) {
+    body = `<div class="qo">清单 ${(q.checklist || []).length} 项</div>`;
+  }
+  return `<div class="qbox">
+    <div class="qt">${t === 'choice' ? '选择题' : t} · ${esc(q.q || '')}</div>
+    ${body}
+    <div class="qo">${String(q.exam || '').toLowerCase() === 'true' ? '（计入学完）' : '（随堂练习）'}</div>
+  </div>`;
+}
+
+async function run(full) {
+  const out = document.getElementById('out');
+  out.innerHTML = '<div class="panel"><span class="spinner"></span>正在读取仓库…</div>';
+
+  let repo, branch = 'main';
+  try {
+    repo = await getJSON(`${API}/repos/${full}`);
+    branch = repo.default_branch || 'main';
+  } catch (e) {
+    out.innerHTML = `<div class="panel"><div class="err">读不到这个仓库：${esc(e.message)}<br><br>
+      检查一下：<ul style="margin:6px 0 0;padding-left:18px">
+      <li>名字写对了吗（<code>owner/repo</code> 两段）</li>
+      <li>仓库是公开的吗（私有仓库需要 token，这里不支持）</li>
+      </ul></div></div>`;
+    return;
+  }
+
+  let loaded;
+  try {
+    loaded = await loadRepo(full, branch);
+  } catch (e) {
+    out.innerHTML = `<div class="panel"><div class="err">读取文件失败：${esc(e.message)}</div></div>`;
+    return;
+  }
+
+  const rep = BookCheck.validate(loaded.files);
+  const m = rep.meta || {};
+  const s = rep.stats;
+
+  let html = '';
+
+  html += `<div class="verdict ${rep.ok ? 'ok' : 'bad'}">
+    ${rep.ok ? '✓ 通过校验 —— 这本书可以被收录' : `✗ 有 ${rep.errors.length} 处错误，暂时不会被收录`}
+    <small>${esc(m.title || full)}${m.author && m.author.name ? ' · ' + esc(m.author.name) : ''}
+      · ${s.lessons} 课 / ${s.questions} 题 / ${s.languages} 种语言</small>
+  </div>`;
+
+  html += '<div class="panel">';
+  html += `<div class="stats">
+    <span><b>${s.lessons}</b> 课</span>
+    <span><b>${s.questions}</b> 道题</span>
+    <span><b>${s.code}</b> 道可判分题</span>
+    <span><b>${s.tests}</b> 个章测</span>
+    <span><b>${s.languages}</b> 种语言</span>
+    <span><b>${loaded.count}</b> 个文件</span>
+  </div>`;
+
+  if (rep.errors.length) {
+    html += `<div class="sec-h" style="color:var(--bad)">必须修掉的（${rep.errors.length}）</div>
+      <ul class="issues">${rep.errors.map(e => `<li>${esc(e)}</li>`).join('')}</ul>`;
+  }
+  if (rep.warnings.length) {
+    html += `<div class="sec-h" style="color:var(--warn)">建议改进（${rep.warnings.length}，不影响收录）</div>
+      <ul class="issues">${rep.warnings.map(e => `<li>${esc(e)}</li>`).join('')}</ul>`;
+  }
+  if (!rep.errors.length && !rep.warnings.length) {
+    html += '<div class="empty">一条问题都没有，很干净。</div>';
+  }
+  html += '</div>';
+
+  // ---- 预览：目录 ----
+  const lang = (m.langs && m.langs[0]) || 'zh';
+  const tocRaw = loaded.files[`content/${lang}/toc.json`];
+  if (tocRaw) {
+    let toc;
+    try { toc = JSON.parse(tocRaw); } catch (e) { toc = null; }
+    if (toc && toc.chapters) {
+      html += '<div class="panel"><div class="sec-h">目录预览</div><div class="toc">';
+      const cache = {};
+      for (const ch of toc.chapters) {
+        html += `<div class="toc-ch">${esc(ch.title || '')}</div>`;
+        for (const L of (ch.lessons || [])) {
+          const id = String(L.id || L);
+          let title = L.title, sm = L.summary;
+          if (!title) {
+            const md = loaded.files[`content/${lang}/lessons/${id}.md`];
+            if (md) {
+              const h = md.split('\n').find(l => /^#\s+\S/.test(l));
+              if (h) title = h.replace(/^#\s+/, '').replace(/^\d{2}\s+/, '').trim();
+              const q = md.split('\n').find(l => /^>\s+\S/.test(l));
+              if (q) sm = q.replace(/^>\s+/, '').trim();
+            }
+          }
+          cache[id] = `content/${lang}/lessons/${id}.md`;
+          html += `<div class="toc-item" data-md="${esc(cache[id])}">
+            <span class="n">${esc(id)}</span>
+            <span><div>${esc(title || id)}</div>
+            ${sm ? `<div class="sm">${esc(String(sm).slice(0, 70))}</div>` : ''}</div>
+          </div>`;
+        }
+        if (ch.test) {
+          html += `<div class="toc-item" data-md="content/${lang}/lessons/${esc(ch.test)}.md">
+            <span class="n">测</span><span>${esc(ch.title || '')} · 章测</span></div>`;
+        }
+      }
+      html += '</div></div>';
+    }
+  }
+
+  // ---- 预览：课文 ----
+  html += `<div class="panel"><div class="sec-h">课文预览</div>
+    <div class="hint" style="margin:0 0 6px">点上面目录里的任意一课，这里会显示它的渲染效果和题目。</div>
+    <div id="pv" class="preview"><div class="empty">还没选课文。</div></div></div>`;
+
+  out.innerHTML = html;
+
+  window.__files = loaded.files;
+  out.querySelectorAll('.toc-item[data-md]').forEach(el => {
+    el.onclick = () => {
+      const md = window.__files[el.dataset.md];
+      if (!md) { document.getElementById('pv').innerHTML = '<div class="empty">读不到这一课。</div>'; return; }
+      const qs = BookCheck.blocks(md);
+      let body = renderMarkdown(md.replace(/```quiz\n[\s\S]*?^```\s*$/gm, ''));
+      body += qs.length
+        ? `<div class="sec-h">这一课的 ${qs.length} 道题</div>` + qs.map(renderQuiz).join('')
+        : '<div class="sec-h" style="color:var(--bad)">这一课一道题都没有</div>';
+      document.getElementById('pv').innerHTML = body;
+      document.getElementById('pv').scrollTop = 0;
+    };
+  });
+}
+
+document.getElementById('go').onclick = () => {
+  const v = document.getElementById('repo').value.trim().replace(/^https?:\/\/github\.com\//, '').replace(/\/$/, '');
+  if (!v.includes('/')) { alert('请填 owner/repo 两段，例如 Cool-zimo/al-book-office-automation'); return; }
+  run(v);
+};
+document.getElementById('repo').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('go').click();
+});
+document.getElementById('demo').onclick = () => {
+  document.getElementById('repo').value = 'Cool-zimo/al-book-office-automation';
+  document.getElementById('go').click();
+};
+</script>
+</body>
+</html>
