@@ -24,8 +24,11 @@ for _cand in ['/data/workspace', os.environ.get('AL_HOME', '')]:
 try:
     import gh
 except ImportError:
-    gh = None
-    print('警告：找不到 gh.py，无法访问 GitHub。设置 AL_HOME 指向含 gh.py 的目录。')
+    try:
+        import gh_stub as gh          # Actions 里用这份（只读 GITHUB_TOKEN）
+    except ImportError:
+        gh = None
+        print('警告：找不到 gh.py 或 gh_stub.py，无法访问 GitHub。')
 import validate_book as VB
 
 DRY = '--dry' in sys.argv
