@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-01T09:27:37.940197Z",
+ "updated": "2026-10-01T09:37:23.790273Z",
  "format_version": 1,
  "books": [
   {
@@ -8,7 +8,7 @@
    "url": "https://github.com/Cool-zimo/al-book-office-automation",
    "branch": "main",
    "stars": 0,
-   "pushed_at": "",
+   "pushed_at": "2026-10-01T01:47:43Z",
    "ok": true,
    "title": "Python 自动化办公",
    "subtitle": "批量处理文件与表格",

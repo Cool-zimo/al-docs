@@ -10,11 +10,16 @@ AnyLearn 的索引机器人会**自动发现它、自动校验它**，通过后�
 | # | 标记 | 要求 | 作用 |
 |---|---|---|---|
 | 1 | **仓库名** | 必须以 `al-book-` 开头，例如 `al-book-web-scraping` | 人类可读，一眼看出是本 al 书 |
-| 2 | **GitHub topic** | 必须打上 topic `al-book` | 机器人发现你的**主要入口** |
+| 2 | **GitHub topic** | 必须打上 topic `al-book` | 机器人发现你的**唯一入口** |
 | 3 | **声明文件** | 仓库根目录必须有 `albook.json`，且含 `"format": "al-book"` | 防止 topic 被误用、防止同名无关仓库被误收 |
 
 **三重标记是为了不误伤**。只靠仓库名会撞车（全世界都可能有 `al-book-demo`）；
 只靠 topic 会被无关仓库误打标签混进来。三个都对上，机器人才会停下来读你的内容。
+
+> **topic 是硬性入口，这一项缺了机器人根本扫不到你。**
+> 早期版本还会顺带搜 `al-book- in:name`，但 GitHub 的仓库名搜索是模糊匹配，
+> 会把 `AliAlQaseerBooks`、`virtual-book-allestimento` 这类毫不相关的仓库全捞进来，
+> 既慢又全是噪声。所以现在只认 topic——**记得打**。
 
 >`format` 字段的值必须是**精确字符串** `al-book`。写成 `albook`、`AL-BOOK`、`al_book` 都会被视为无效、
 >直接跳过，不会给你报错——所以发现不了自己的书时，**第一件事就是检查这个字段**。

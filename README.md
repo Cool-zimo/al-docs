@@ -28,7 +28,7 @@
 | 标记 | 例子 |
 |---|---|
 | 仓库名前缀 | `al-book-xxx` |
-| GitHub topic | `al-book` |
+| GitHub topic | `al-book`（**缺了扫不到**）|
 | `albook.json` 里的 `format` | 精确等于 `al-book` |
 
 只靠仓库名会撞车（全世界都可能有 `al-book-demo`）；

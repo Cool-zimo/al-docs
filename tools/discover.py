@@ -43,7 +43,10 @@ NAME_PREFIX = 'al-book-'
 def search_repos():
     """搜出候选仓库（去重）。"""
     found = {}
-    for q in [f'topic:{t}' for t in TOPICS] + [f'{NAME_PREFIX} in:name']:
+    # 只用 topic 搜索。GitHub 的 in:name 是模糊匹配，
+    # 搜 "al-book-" 会把 AliAlQaseerBooks、virtual-book-allestimento 之类全捞进来，
+    # 既慢又全是噪声。topic 是精确的，规范要求作者必须打。
+    for q in [f'topic:{t}' for t in TOPICS]:
         page = 1
         while page <= 5:
             # 查询串必须转义，否则含空格的 q（如 "al-book- in:name") 会直接报错
@@ -115,13 +118,14 @@ def main():
             continue
         print(f'\n--- {full}')
         marks, meta = check_marks(owner, repo)
+        if not marks['topic_ok']:
+            print('  跳过：没打 topic:al-book（三重标记缺这一项，规范里是必需的）')
+            continue
         if not marks['format_ok']:
             print(f'  跳过：{marks["reason"] or "format 字段不匹配"}')
             continue
         if not marks['name_ok']:
             print('  提示：仓库名不以 al-book- 开头（不影响收录，但建议改）')
-        if not marks['topic_ok']:
-            print('  提示：没有打 topic:al-book（不影响本次收录，但下次可能扫不到）')
 
         files = VB.load_from_github(full)
         rep = VB.validate(files)
