@@ -1,0 +1,38 @@
+name: Discover al-books
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'      # 每 6 小时扫一次
+  workflow_dispatch:            # 也可以手动触发
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Scan and validate
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: python3 tools/discover.py
+
+      - name: Commit registry
+        run: |
+          git config user.name "al-docs bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add registry.json reports/
+          if git diff --cached --quiet; then
+            echo "索引无变化"
+          else
+            git commit -m "更新第三方书籍索引 [skip ci]"
+            git push
+          fi
