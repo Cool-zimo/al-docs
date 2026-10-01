@@ -91,7 +91,25 @@
 <script src="tools/validate.js"></script>
 <script>
 const API = 'https://api.github.com';
-const RAW = 'https://raw.githubusercontent.com';
+
+/**
+ * 多源回退。
+ * raw.githubusercontent.com 在国内经常连不上（不是慢，是超时），
+ * 所以按 jsDelivr → raw 的顺序试，每个源 5 秒超时，成功一次就记住。
+ *
+ * 拿文件清单仍然只花 1 次 API 调用（tree），内容走 CDN 不受限流影响。
+ */
+const TIMEOUT = 5000;
+
+async function _get(url, ms) {
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: ctl.signal, cache: 'no-store' });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return await r.text();
+  } finally { clearTimeout(timer); }
+}
 
 function esc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
@@ -109,20 +127,67 @@ async function getJSON(url) {
  * raw 是 CDN 不是 API，不受 60 次/小时的限制 ——
  * 否则校验一本 30 课的书就要几十次请求，两次就撞上限流。
  */
+/** 各源把路径变成 URL */
+const SRC = {
+  jsdelivr: (full, branch, p) => `https://cdn.jsdelivr.net/gh/${full}@${branch}/${p}`,
+  raw:      (full, branch, p) => `https://raw.githubusercontent.com/${full}/${branch}/${p}`,
+};
+
+let _srcOk = '';
+try { _srcOk = localStorage.getItem('aldocs:srcOk') || ''; } catch (e) {}
+
+function srcOrder() {
+  const ids = [];
+  if (_srcOk && SRC[_srcOk]) ids.push(_srcOk);
+  for (const k of ['jsdelivr', 'raw']) if (!ids.includes(k)) ids.push(k);
+  return ids;
+}
+
+/** 取一个文件：按源顺序试，成功就记住这个源 */
+async function fetchOne(full, branch, path) {
+  const ids = srcOrder();
+  let last = null;
+  for (const id of ids) {
+    try {
+      const t = await _get(SRC[id](full, branch, path), TIMEOUT);
+      _srcOk = id;
+      try { localStorage.setItem('aldocs:srcOk', id); } catch (e) {}
+      return t;
+    } catch (e) { last = e; }
+  }
+  throw last || new Error('所有源都取不到');
+}
+
 async function loadRepo(full, branch) {
   const tree = await getJSON(`${API}/repos/${full}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
   const want = tree.tree.filter(x =>
     x.type === 'blob' && /\.(md|json)$/.test(x.path) &&
     (x.path === 'albook.json' || x.path === 'README.md' || x.path.startsWith('content/')));
 
+  if (!want.length) return { files: {}, count: 0 };
+
+  // 先用第一个文件定源，再并发下其余 —— 每个文件都从头试源太慢
+  let usedSrc = null;
   const files = {};
-  await Promise.all(want.map(async x => {
-    try {
-      const r = await fetch(`${RAW}/${full}/${branch}/${x.path}`);
-      if (r.ok) files[x.path] = await r.text();
-    } catch (e) { /* 单个文件读不到就跳过 */ }
-  }));
-  return { files, count: want.length };
+  try {
+    files[want[0].path] = await fetchOne(full, branch, want[0].path);
+    usedSrc = _srcOk;
+  } catch (e) {
+    throw new Error('连 albook.json 都读不到：' + e.message);
+  }
+
+  const rest = want.slice(1);
+  let i = 0;
+  async function worker() {
+    while (i < rest.length) {
+      const x = rest[i++];
+      try { files[x.path] = await _get(SRC[usedSrc](full, branch, x.path), TIMEOUT); }
+      catch (e) { /* 漏掉的不补，校验时会报"文件缺失" */ }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(8, rest.length) }, worker));
+
+  return { files, count: want.length, src: usedSrc };
 }
 
 function renderMarkdown(md) {
@@ -160,7 +225,7 @@ function renderQuiz(q) {
 
 async function run(full) {
   const out = document.getElementById('out');
-  out.innerHTML = '<div class="panel"><span class="spinner"></span>正在读取仓库…</div>';
+  out.innerHTML = '<div class="panel"><span class="spinner"></span>正在读取仓库…（自动选择可用的源）</div>';
 
   let repo, branch = 'main';
   try {
@@ -197,6 +262,7 @@ async function run(full) {
 
   html += '<div class="panel">';
   html += `<div class="stats">
+    <span>取源：<b style="font-size:13px">${esc(loaded.src === 'jsdelivr' ? 'jsDelivr CDN' : (loaded.src || '—'))}</b></span>
     <span><b>${s.lessons}</b> 课</span>
     <span><b>${s.questions}</b> 道题</span>
     <span><b>${s.code}</b> 道可判分题</span>
