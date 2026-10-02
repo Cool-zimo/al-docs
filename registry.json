@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-01T09:37:23.790273Z",
+ "updated": "2026-10-02T04:50:17.907946Z",
  "format_version": 1,
  "books": [
   {
@@ -53,6 +53,140 @@
    "n_errors": 0,
    "n_warnings": 0,
    "errors": [],
+   "warnings": [],
+   "marks": {
+    "name_ok": true,
+    "topic_ok": true,
+    "format_ok": true,
+    "reason": ""
+   }
+  },
+  {
+   "id": "g",
+   "repo": "Cool-zimo/al-book-g",
+   "url": "https://github.com/Cool-zimo/al-book-g",
+   "branch": "main",
+   "stars": 0,
+   "pushed_at": "2026-10-02T03:01:45Z",
+   "ok": true,
+   "title": "d",
+   "subtitle": "一本 AnyLearn 教材",
+   "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+   "stage": "基础",
+   "level": "入门",
+   "langs": [
+    "zh"
+   ],
+   "tags": [],
+   "cover": "",
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "你的名字"
+   },
+   "chapters": [],
+   "stats": {
+    "lessons": 1,
+    "tests": 0,
+    "questions": 3,
+    "code_questions": 1,
+    "languages": 1,
+    "lines": 51
+   },
+   "n_errors": 0,
+   "n_warnings": 1,
+   "errors": [],
+   "warnings": [
+    "[zh] 01.md: 只有 51 行，可能是占位内容"
+   ],
+   "marks": {
+    "name_ok": true,
+    "topic_ok": true,
+    "format_ok": true,
+    "reason": ""
+   }
+  },
+  {
+   "id": "c",
+   "repo": "Cool-zimo/al-book-c",
+   "url": "https://github.com/Cool-zimo/al-book-c",
+   "branch": "main",
+   "stars": 0,
+   "pushed_at": "2026-10-02T04:43:28Z",
+   "ok": false,
+   "title": "d",
+   "subtitle": "一本 AnyLearn 教材",
+   "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+   "stage": "基础",
+   "level": "入门",
+   "langs": [
+    "zh"
+   ],
+   "tags": [],
+   "cover": "",
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "你的名字"
+   },
+   "chapters": [],
+   "stats": {
+    "lessons": 0,
+    "tests": 0,
+    "questions": 0,
+    "code_questions": 0,
+    "languages": 0,
+    "lines": 0
+   },
+   "n_errors": 2,
+   "n_warnings": 0,
+   "errors": [
+    "langs 声明了 \"zh\"，但 content/zh/ 下没有任何文件",
+    "content/ 下找不到任何 zh/ 或 en/ 目录"
+   ],
+   "warnings": [],
+   "marks": {
+    "name_ok": true,
+    "topic_ok": true,
+    "format_ok": true,
+    "reason": ""
+   }
+  },
+  {
+   "id": "dfg",
+   "repo": "Cool-zimo/al-book-dfg",
+   "url": "https://github.com/Cool-zimo/al-book-dfg",
+   "branch": "main",
+   "stars": 0,
+   "pushed_at": "2026-10-02T04:38:07Z",
+   "ok": false,
+   "title": "d",
+   "subtitle": "一本 AnyLearn 教材",
+   "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+   "stage": "基础",
+   "level": "入门",
+   "langs": [
+    "zh"
+   ],
+   "tags": [],
+   "cover": "",
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "你的名字"
+   },
+   "chapters": [],
+   "stats": {
+    "lessons": 0,
+    "tests": 0,
+    "questions": 0,
+    "code_questions": 0,
+    "languages": 0,
+    "lines": 0
+   },
+   "n_errors": 2,
+   "n_warnings": 0,
+   "errors": [
+    "langs 声明了 \"zh\"，但 content/zh/ 下没有任何文件",
+    "content/ 下找不到任何 zh/ 或 en/ 目录"
+   ],
    "warnings": [],
    "marks": {
     "name_ok": true,
