@@ -1,0 +1,56 @@
+{
+ "repo": "Cool-zimo/al-book-c",
+ "meta": {
+  "format": "al-book",
+  "version": 1,
+  "id": "c",
+  "title": "d",
+  "subtitle": "一本 AnyLearn 教材",
+  "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+  "stage": "基础",
+  "level": "入门",
+  "langs": [
+   "zh"
+  ],
+  "license": "CC BY-NC 4.0",
+  "author": {
+   "name": "你的名字"
+  },
+  "tags": []
+ },
+ "report": {
+  "ok": false,
+  "errors": [
+   "langs 声明了 \"zh\"，但 content/zh/ 下没有任何文件",
+   "content/ 下找不到任何 zh/ 或 en/ 目录"
+  ],
+  "warnings": [],
+  "stats": {
+   "lessons": 0,
+   "tests": 0,
+   "questions": 0,
+   "code_questions": 0,
+   "languages": 0,
+   "lines": 0
+  },
+  "per_lang": {},
+  "meta": {
+   "format": "al-book",
+   "version": 1,
+   "id": "c",
+   "title": "d",
+   "subtitle": "一本 AnyLearn 教材",
+   "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+   "stage": "基础",
+   "level": "入门",
+   "langs": [
+    "zh"
+   ],
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "你的名字"
+   },
+   "tags": []
+  }
+ }
+}
