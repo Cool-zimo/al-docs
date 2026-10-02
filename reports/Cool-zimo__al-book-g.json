@@ -1,0 +1,61 @@
+{
+ "repo": "Cool-zimo/al-book-g",
+ "meta": {
+  "format": "al-book",
+  "version": 1,
+  "id": "g",
+  "title": "d",
+  "subtitle": "一本 AnyLearn 教材",
+  "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+  "stage": "基础",
+  "level": "入门",
+  "langs": [
+   "zh"
+  ],
+  "license": "CC BY-NC 4.0",
+  "author": {
+   "name": "你的名字"
+  },
+  "tags": []
+ },
+ "report": {
+  "ok": true,
+  "errors": [],
+  "warnings": [
+   "[zh] 01.md: 只有 51 行，可能是占位内容"
+  ],
+  "stats": {
+   "lessons": 1,
+   "tests": 0,
+   "questions": 3,
+   "code_questions": 1,
+   "languages": 1,
+   "lines": 51
+  },
+  "per_lang": {
+   "zh": {
+    "lessons": 1,
+    "tests": 0,
+    "questions": 3
+   }
+  },
+  "meta": {
+   "format": "al-book",
+   "version": 1,
+   "id": "g",
+   "title": "d",
+   "subtitle": "一本 AnyLearn 教材",
+   "desc": "在这里写几句介绍，说明这本书讲什么、适合谁。",
+   "stage": "基础",
+   "level": "入门",
+   "langs": [
+    "zh"
+   ],
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "你的名字"
+   },
+   "tags": []
+  }
+ }
+}
