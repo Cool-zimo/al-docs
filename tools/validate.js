@@ -86,7 +86,15 @@ const BookCheck = (() => {
     if (opens !== qs.length) {
       errors.push(`${tag}: 有 ${opens - qs.length} 个 quiz 块没有闭合（末尾缺 \`\`\` 独占一行）`);
     }
-    if (lines < 60) warnings.push(`${tag}: 只有 ${lines} 行，可能是占位内容`);
+    // 占位判断不能只看行数：60 行的门槛对"从现成文章导入"是误报 ——
+    // 一篇真实文章每节 6 行很正常，一次导入能刷出十几条警告，全是噪音，
+    // 用户会以为自己做错了。行数少但字多的显然是正经内容。
+    // 真正的占位是"一句话"级别（几十字），不是"一小节"（几十行）。
+    // 阈值定在 80 字：少于这个数基本就是"待补充"，多于此的短小节是正经内容。
+    const chars = md.replace(/\s/g, '').length;
+    if (chars < 80) {
+      warnings.push(`${tag}: 只有 ${chars} 字，可能是占位内容`);
+    }
 
     // 非教材：题目是可选的。没题就过，有题就照常校验合法性。
     if (!qs.length) return strict ? (errors.push(`${tag}: 一道题都没有`), 0) : 0;

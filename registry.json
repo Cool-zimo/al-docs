@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-04T10:41:02.069589Z",
+ "updated": "2026-10-04T11:13:54.202506Z",
  "format_version": 1,
  "books": [
   {
@@ -62,6 +62,52 @@
    }
   },
   {
+   "id": "book",
+   "repo": "Cool-zimo/al-book-book",
+   "url": "https://github.com/Cool-zimo/al-book-book",
+   "branch": "main",
+   "stars": 0,
+   "pushed_at": "2026-10-04T11:05:43Z",
+   "ok": true,
+   "title": "数据处理踩坑记录",
+   "subtitle": "从一篇 Markdown 一键导入",
+   "desc": "这是做数据清洗两年攒下来的经验，每一条都是加班换来的。",
+   "stage": "other",
+   "level": "入门",
+   "langs": [
+    "zh"
+   ],
+   "tags": [],
+   "cover": "",
+   "license": "CC BY-NC 4.0",
+   "author": {
+    "name": "Cool-zimo"
+   },
+   "chapters": [],
+   "stats": {
+    "lessons": 8,
+    "tests": 0,
+    "questions": 0,
+    "code_questions": 0,
+    "languages": 1,
+    "lines": 59
+   },
+   "n_errors": 0,
+   "n_warnings": 3,
+   "errors": [],
+   "warnings": [
+    "[zh] 05.md: 只有 67 字，可能是占位内容",
+    "[zh] 07.md: 只有 71 字，可能是占位内容",
+    "[zh] 08.md: 只有 24 字，可能是占位内容"
+   ],
+   "marks": {
+    "name_ok": true,
+    "topic_ok": true,
+    "format_ok": true,
+    "reason": ""
+   }
+  },
+  {
    "id": "drt",
    "repo": "Cool-zimo/al-book-drt",
    "url": "https://github.com/Cool-zimo/al-book-drt",
@@ -93,11 +139,9 @@
     "lines": 51
    },
    "n_errors": 0,
-   "n_warnings": 1,
+   "n_warnings": 0,
    "errors": [],
-   "warnings": [
-    "[zh] 01.md: 只有 51 行，可能是占位内容"
-   ],
+   "warnings": [],
    "marks": {
     "name_ok": true,
     "topic_ok": true,
@@ -135,7 +179,7 @@
     "lines": 10
    },
    "n_errors": 8,
-   "n_warnings": 0,
+   "n_warnings": 2,
    "errors": [
     "albook.json 缺必需字段：subtitle",
     "albook.json 缺必需字段：desc",
@@ -146,7 +190,10 @@
     "[zh] 01.md: 一道题都没有",
     "[zh] test-01.md: 一道题都没有"
    ],
-   "warnings": [],
+   "warnings": [
+    "[zh] 01.md: 只有 14 字，可能是占位内容",
+    "[zh] test-01.md: 只有 9 字，可能是占位内容"
+   ],
    "marks": {
     "name_ok": true,
     "topic_ok": true,

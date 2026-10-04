@@ -18,6 +18,7 @@ sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.dirname(HERE))
 
 FORMAT_KEY = 'al-book'
+KINDS = ('textbook', 'novel', 'notes', 'other')
 REQUIRED = ['id', 'title', 'subtitle', 'desc', 'stage', 'level', 'langs', 'author', 'license']
 VALID_STAGES = {'基础', '标准库', '数据', '桌面', '算法', '工程', '网页', '实战', 'other'}
 ID_RE = re.compile(r'^[a-z0-9][a-z0-9-]*$')
@@ -116,6 +117,19 @@ def validate(files):
         if not meta.get(k):
             errors.append(f'albook.json 缺必需字段：{k}')
 
+    # kind 决定要不要卡题目数量。教材要求每课 2 道测验、章测 5 题；
+    # 小说 / 笔记本来就没题，卡了就发不出去。
+    #
+    # 这一条必须和 JS 校验器一致 —— 两版不一致时，主站说"可以发布"、
+    # 机器人却拒收，表现就是"发布了却谁都搜不到"，作者完全不知道为什么。
+    kind = str(meta.get('kind') or 'textbook').strip().lower()
+    if kind not in KINDS:
+        warnings.append(
+            f'kind "{kind}" 不在已知类型里（{"/".join(KINDS)}），按宽松处理（不强制题目数量）')
+        is_textbook = False
+    else:
+        is_textbook = (kind == 'textbook')
+
     bid = str(meta.get('id', '')).strip()
     if bid and not ID_RE.match(bid):
         errors.append(f'id "{bid}" 含非法字符：只允许小写字母、数字和连字符，且必须以字母或数字开头')
@@ -156,7 +170,7 @@ def validate(files):
     # 3. 逐语言校验
     per_lang = {}
     for L in present:
-        per_lang[L] = check_lang(L, files, errors, warnings, stats)
+        per_lang[L] = check_lang(L, files, errors, warnings, stats, is_textbook)
 
     # 4. 中英题数对齐
     if 'zh' in per_lang and 'en' in per_lang:
@@ -184,7 +198,7 @@ def validate(files):
     }
 
 
-def check_lang(L, files, errors, warnings, stats):
+def check_lang(L, files, errors, warnings, stats, is_textbook=True):
     pre = f'content/{L}/'
     toc_raw = files.get(pre + 'toc.json')
     toc = None
@@ -239,9 +253,11 @@ def check_lang(L, files, errors, warnings, stats):
 
     nq = 0
     for n in sorted(lessons):
-        nq += check_lesson(L, n, lessons[n], errors, warnings, stats, is_test=False)
+        nq += check_lesson(L, n, lessons[n], errors, warnings, stats, is_test=False,
+                           is_textbook=is_textbook)
     for t in sorted(tests):
-        nq += check_lesson(L, t, tests[t], errors, warnings, stats, is_test=True)
+        nq += check_lesson(L, t, tests[t], errors, warnings, stats, is_test=True,
+                           is_textbook=is_textbook)
 
     stats['lessons'] += len(lessons)
     stats['tests'] += len(tests)
@@ -249,7 +265,7 @@ def check_lang(L, files, errors, warnings, stats):
     return {'lessons': len(lessons), 'tests': len(tests), 'questions': nq}
 
 
-def check_lesson(L, name, md, errors, warnings, stats, is_test):
+def check_lesson(L, name, md, errors, warnings, stats, is_test, is_textbook=True):
     tag = f'[{L}] {name}.md'
     lines = md.count('\n') + 1
     stats['lines'] += lines
@@ -260,21 +276,31 @@ def check_lesson(L, name, md, errors, warnings, stats, is_test):
     if opens != len(qs):
         errors.append(f'{tag}: 有 {opens - len(qs)} 个 quiz 块没有闭合（末尾缺 ``` 独占一行）')
 
+    # 与 JS 版保持一致：占位是"一句话"级别，不是"一小节"。
+    # 只看行数的话，导入真实文章会刷出十几条误报。
+    # 顺序也有讲究：必须在下面的 return 之前，否则没题的短课文直接 return 掉，
+    # 两边警告数就对不上了。
+    chars = len(re.sub(r'\s', '', md))
+    if chars < 80:
+        warnings.append(f'{tag}: 只有 {chars} 字，可能是占位内容')
+
     if not qs:
-        errors.append(f'{tag}: 一道题都没有')
+        # 非教材（小说 / 笔记）允许没题 —— 强制要求等于不让这类书发布
+        if is_textbook:
+            errors.append(f'{tag}: 一道题都没有')
         return 0
 
-    if lines < 60:
-        warnings.append(f'{tag}: 只有 {lines} 行，可能是占位内容')
-
     if is_test:
+        # 与 JS 版一致：只是建议，不是硬要求。
+        # 写成 error 的话，两版对同一本书给出不同结论，最让人困惑。
         if len(qs) < 5:
             warnings.append(f'{tag}: 章测只有 {len(qs)} 题，建议 8 题')
     else:
         exam = [q for q in qs if truthy(q.get('exam'))]
-        if len(exam) != 2:
+        # 非教材不卡题目数量：小说 / 笔记本来就没题
+        if is_textbook and len(exam) != 2:
             errors.append(f'{tag}: 带 exam: true 的题 {len(exam)} 道（应为 2）')
-        if len(qs) < 3:
+        if is_textbook and len(qs) < 3:
             warnings.append(f'{tag}: 只有 {len(qs)} 道题（建议 3 道：1 随堂 + 2 测验）')
 
     for q in qs:
