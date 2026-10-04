@@ -283,14 +283,37 @@ def check_lesson(L, name, md, errors, warnings, stats, is_test):
             opts = q.get('options') or []
             if not isinstance(opts, list):
                 opts = []
-            try:
-                ans = int(q.get('answer', -1))
-            except Exception:
-                ans = -1
+            # 多选题的 answer 是逗号分隔的下标列表，不能当单个整数解析 ——
+            # 否则 int('0, 1') 抛异常回退成 -1，直接报"越界"，是假错误。
+            is_multi = str(q.get('multi') or '').strip().lower() == 'true'
             if len(opts) < 2:
                 errors.append(f'{tag}: 选择题只有 {len(opts)} 个选项')
-            elif not (0 <= ans < len(opts)):
-                errors.append(f'{tag}: 选择题 answer={ans} 越界（共 {len(opts)} 个选项）')
+            elif is_multi:
+                picks = []
+                bad = False
+                for part in str(q.get('answer') or '').split(','):
+                    part = part.strip()
+                    if not part:
+                        bad = True
+                        continue
+                    try:
+                        n = int(part)
+                    except Exception:
+                        bad = True
+                        continue
+                    if not (0 <= n < len(opts)):
+                        bad = True
+                    picks.append(n)
+                if bad or not picks:
+                    errors.append(
+                        f'{tag}: 多选题 answer="{q.get("answer")}" 有越界下标（共 {len(opts)} 个选项）')
+            else:
+                try:
+                    ans = int(q.get('answer', -1))
+                except Exception:
+                    ans = -1
+                if not (0 <= ans < len(opts)):
+                    errors.append(f'{tag}: 选择题 answer={q.get("answer")} 越界（共 {len(opts)} 个选项）')
             if not str(q.get('q', '')).strip():
                 errors.append(f'{tag}: 选择题缺题干 q')
         elif t in ('code', 'function', 'project', 'local', 'js', 'css', 'html'):
@@ -310,6 +333,15 @@ def check_lesson(L, name, md, errors, warnings, stats, is_test):
                 warnings.append(f'{tag}: local 题缺 checklist')
             if t == 'project' and not q.get('starter'):
                 warnings.append(f'{tag}: project 题缺 starter')
+        elif t == 'fill':
+            # 填空题：answer 是关键词，可用 | 分隔多个可接受的写法。
+            # 不认识这个题型的话，缺 answer 也不会被检查 ——
+            # 那样作者发一道没答案的填空题照样收录，读者做了永远判不对。
+            ans = str(q.get('answer') or '').strip()
+            if not ans:
+                errors.append(f'{tag}: 填空题缺 answer')
+            if not str(q.get('q') or '').strip():
+                errors.append(f'{tag}: 填空题缺题干 q')
         else:
             warnings.append(f'{tag}: 未知题型 "{t}"')
     return len(qs)
